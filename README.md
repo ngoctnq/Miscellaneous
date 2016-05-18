@@ -23,3 +23,5 @@ To input the problem, change the `constraint` and `choices` variables. As commen
 # params: rows/columns, count, head/tail
 ```
 and for `choices`, it's a string of all the possible characters to fill in.
+
+<i>Update:</i> Now allows you to uncomment the GUI part of the code and insert problem with a Tkinter interface.
