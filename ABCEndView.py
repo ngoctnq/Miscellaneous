@@ -6,14 +6,22 @@ from Tkinter import *
 import tkMessageBox
 
 # params: rows/columns, count, head/tail
-constraint = [[['A',''],['','A'],['D',''],['',''],['','E'],['','']],
-                [['','E'],['','B'],['E',''],['','D'],['C',''],['','C']]]
-choices = 'ABCDE'
+#constraint = [[['A',''],['C','D'],['A',''],['','C'],['E',''],['','E'],['E','']],
+#                [['A',''],['','A'],['B',''],['','B'],['','B'],['C','D'],['B','']]]
+#choices = 'ABCDE'
 
 # constraint = [[['',''],['',''],['A','']],[['','B'],['',''],['','']]]
 # choices = 'AB'
+
+constraint = [[['A',''],['','A'],['D',''],['',''],['','E'],['',''],],
+                [['','E'],['','B'],['E',''],['','D'],['C',''],['','C']]]
+#constraint = [[['',''],['',''],['',''],['',''],['',''],['',''],],
+#                [['',''],['',''],['',''],['',''],['',''],['','']]]
+choices = 'ABCDE'
 dim = len(constraint[0])
 diag = True
+
+
 
 
 '''
@@ -228,6 +236,8 @@ else:
     diag = False
 #______________
 '''
+
+
 
 
 # start reinitializing
@@ -559,6 +569,15 @@ def optimize(board, coord):
         for j in range(dim):
             if j != coord[1]:
                 board[coord[0]][j] = board[coord[0]][j].replace(board[coord[0]][coord[1]],'')
+        if diag:
+            if coord[0] == coord[1]:
+                for i in range(dim):
+                    if i != coord[0]:
+                        board[i][i] = board[i][i].replace(board[coord[0]][coord[1]],'')
+            if coord[0]+coord[1] == dim-1:
+                for i in range(dim):
+                    if i != coord[0]:
+                        board[i][dim-1-i] = board[i][dim-1-i].replace(board[coord[0]][coord[1]],'')
 
     # TODO: unoptimized as cancel all board rather than
     # just one character and its corresponding columns and rows
@@ -598,9 +617,10 @@ def solve(shit_to_solve):
     # do_print = if_print(board)
     # do_print = is_legit(board)
     do_print = False
-
+    
     if do_print:
         print board
+    
     if is_legit(board):
         global trials_count
         trials_count += 1
