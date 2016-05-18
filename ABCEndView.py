@@ -6,50 +6,45 @@ from Tkinter import *
 import tkMessageBox
 
 # params: rows/columns, count, head/tail
+
+# problem 209
 #constraint = [[['A',''],['C','D'],['A',''],['','C'],['E',''],['','E'],['E','']],
 #                [['A',''],['','A'],['B',''],['','B'],['','B'],['C','D'],['B','']]]
 #choices = 'ABCDE'
 
+# problem 3
 # constraint = [[['',''],['',''],['A','']],[['','B'],['',''],['','']]]
 # choices = 'AB'
 
+# problem 176
 constraint = [[['A',''],['','A'],['D',''],['',''],['','E'],['',''],],
                 [['','E'],['','B'],['E',''],['','D'],['C',''],['','C']]]
-#constraint = [[['',''],['',''],['',''],['',''],['',''],['',''],],
-#                [['',''],['',''],['',''],['',''],['',''],['','']]]
 choices = 'ABCDE'
+
+# last problem of the month
+#constraint = [[['',''], ['B',''], ['A',''], ['B',''], ['D','B'], ['B','A'], ['',''], ['','']],
+#              [['D','B'], ['C','D'], ['','B'], ['C','D'], ['',''], ['C','B'], ['',''], ['','D']]]
+#choices = 'ABCD'
+
 dim = len(constraint[0])
 diag = True
 
 
 
 
-'''
-# GUI PART
-root = Tk()
-root.title("ABC End View Solver")
-desc = Label(root, text = "Dimension? (n x n)")
-desc.pack(side = TOP)
-dim_box = Entry(root)
-dim_box.pack(side = LEFT)
 
-def setDim():
-    global dim
-    text = dim_box.get()
+# GUI PART
+not_entered = True
+while not_entered:
+    text = raw_input("Dimension (n x n)? ")
+
     try:
         dim = int(text)
+        not_entered = False
         if dim < 2:
             raise ValueError
-        root.destroy()
     except ValueError:
-        tkMessageBox.showinfo("Value error!", "Dimension has to be an integer greater than 1.")
-
-forward = Button(root, text = '>', command = setDim)
-forward.pack(side = RIGHT)
-root.protocol("WM_DELETE_WINDOW", quit)
-root.bind('<Return>',(lambda event: setDim()))
-dim_box.focus_set()
-root.mainloop()
+        print "Value error!", "Dimension has to be an integer greater than 1!"
 
 constraint = [[],[]]
 for i in range(dim):
@@ -57,176 +52,107 @@ for i in range(dim):
     constraint[1].append(['',''])
 #______________
 
-root = Tk()
-root.title("ABC End View Solver")
-desc = Label(root, text = "Characters to fill in, with no delimiters:")
-desc.pack(side = TOP)
-dim_box = Entry(root)
-dim_box.pack(side = LEFT)
-
 def not_cap_chars(word):
     for i in range(len(word)):
         if ord(word[i]) != ord('A')+i:
             return True
     return False
 
-def getChoice():
-    global choices
-    choices = dim_box.get()
+not_entered = True
+while not_entered:
+    choices = raw_input("Characters to fill in, with no delimiters: ").upper()
     if not_cap_chars(choices):
-        tkMessageBox.showinfo("String error!", "Only sequencial capital letters are allowed.")
+        print "String error!", "Only sequencial capital letters are allowed."
     elif len(choices) >= dim:
-        tkMessageBox.showinfo("String error!", "Number of choices must be less than "+str(dim)+".")
+        print "String error!", "Number of choices must be less than "+str(dim)+"."
     else:
-        root.destroy()
-
-forward = Button(root, text = '>', command = getChoice)
-forward.pack(side = RIGHT)
-root.protocol("WM_DELETE_WINDOW", quit)
-dim_box.focus_set()
-root.bind('<Return>',(lambda event: getChoice()))
-root.mainloop()
+        not_entered = False
 #______________
 
-root = Tk()
-root.title("Insert row-beginning constraints:")
-desc = Label(root, text = "Delimit with commas, blanks mean no constraints:")
-desc.pack(side = TOP)
-dim_box = Entry(root)
-dim_box.pack(side = LEFT)
-
-def getRow0():
-    constraint_sub = dim_box.get()
-    constraint_sub = constraint_sub.split(',')
+not_entered = True
+while not_entered:
+    constraint_sub = raw_input("Insert row-beginning constraints - Continuously, '-' for none: ").upper()
     if len(constraint_sub) != dim:
-        tkMessageBox.showinfo("Constraints error!", "Number of constraints must be exactly "+str(dim)+".")
+        print "Constraints error!", "Number of constraints must be exactly "+str(dim)+"."
     else:
         legit = True
         while legit:
             for i in range(dim):
                 if constraint_sub[i] in choices:
                     constraint[0][i][0] = constraint_sub[i]
-                else:
+                elif constraint_sub[i] != '-':
                     legit = False
-                    tkMessageBox.showinfo("String error!", constraint_sub[i]+" is not a valid entry!")
+                    print "String error!", constraint_sub[i]+" is not a valid entry!"
                     break
             if i == dim-1:
                 break
         if legit:
-            root.destroy()
-
-forward = Button(root, text = '>', command = getRow0)
-forward.pack(side = RIGHT)
-root.protocol("WM_DELETE_WINDOW", quit)
-dim_box.focus_set()
-root.bind('<Return>',(lambda event: getRow0()))
-root.mainloop()
+            not_entered = False
 #______________
 
-root = Tk()
-root.title("Insert row-ending constraints:")
-desc = Label(root, text = "Delimit with commas, blanks mean no constraints:")
-desc.pack(side = TOP)
-dim_box = Entry(root)
-dim_box.pack(side = LEFT)
-
-def getRow1():
-    constraint_sub = dim_box.get()
-    constraint_sub = constraint_sub.split(',')
+not_entered = True
+while not_entered:
+    constraint_sub = raw_input("Insert row-ending constraints - Continuously, '-' for none: ").upper()
     if len(constraint_sub) != dim:
-        tkMessageBox.showinfo("Constraints error!", "Number of constraints must be exactly "+str(dim)+".")
+        print "Constraints error!", "Number of constraints must be exactly "+str(dim)+"."
     else:
         legit = True
         while legit:
             for i in range(dim):
                 if constraint_sub[i] in choices:
                     constraint[0][i][1] = constraint_sub[i]
-                else:
+                elif constraint_sub[i] != '-':
                     legit = False
-                    tkMessageBox.showinfo("String error!", constraint_sub[i]+" is not a valid entry!")
+                    print "String error!", constraint_sub[i]+" is not a valid entry!"
                     break
             if i == dim-1:
                 break
         if legit:
-            root.destroy()
-
-forward = Button(root, text = '>', command = getRow1)
-forward.pack(side = RIGHT)
-root.protocol("WM_DELETE_WINDOW", quit)
-dim_box.focus_set()
-root.bind('<Return>',(lambda event: getRow1()))
-root.mainloop()
+            not_entered = False
 #______________
 
-root = Tk()
-root.title("Insert columnn-beginning constraints:")
-desc = Label(root, text = "Delimit with commas, blanks mean no constraints:")
-desc.pack(side = TOP)
-dim_box = Entry(root)
-dim_box.pack(side = LEFT)
-
-def getColumn0():
-    constraint_sub = dim_box.get()
-    constraint_sub = constraint_sub.split(',')
+not_entered = True
+while not_entered:
+    constraint_sub = raw_input("Insert column-beginning constraints - Continuously, '-' for none: ").upper()
     if len(constraint_sub) != dim:
-        tkMessageBox.showinfo("Constraints error!", "Number of constraints must be exactly "+str(dim)+".")
+        print "Constraints error!", "Number of constraints must be exactly "+str(dim)+"."
     else:
         legit = True
         while legit:
             for i in range(dim):
                 if constraint_sub[i] in choices:
                     constraint[1][i][0] = constraint_sub[i]
-                else:
+                elif constraint_sub[i] != '-':
                     legit = False
-                    tkMessageBox.showinfo("String error!", constraint_sub[i]+" is not a valid entry!")
+                    print "String error!", constraint_sub[i]+" is not a valid entry!"
                     break
             if i == dim-1:
                 break
         if legit:
-            root.destroy()
-
-forward = Button(root, text = '>', command = getColumn0)
-forward.pack(side = RIGHT)
-root.protocol("WM_DELETE_WINDOW", quit)
-dim_box.focus_set()
-root.bind('<Return>',(lambda event: getColumn0()))
-root.mainloop()
+            not_entered = False
 #______________
 
-root = Tk()
-root.title("Insert column-ending constraints:")
-desc = Label(root, text = "Delimit with commas, blanks mean no constraints:")
-desc.pack(side = TOP)
-dim_box = Entry(root)
-dim_box.pack(side = LEFT)
-
-def getColumn1():
-    constraint_sub = dim_box.get()
-    constraint_sub = constraint_sub.split(',')
+not_entered = True
+while not_entered:
+    constraint_sub = raw_input("Insert column-ending constraints - Continuously, '-' for none: ").upper()
     if len(constraint_sub) != dim:
-        tkMessageBox.showinfo("Constraints error!", "Number of constraints must be exactly "+str(dim)+".")
+        print "Constraints error!", "Number of constraints must be exactly "+str(dim)+"."
     else:
         legit = True
         while legit:
             for i in range(dim):
                 if constraint_sub[i] in choices:
                     constraint[1][i][1] = constraint_sub[i]
-                else:
+                elif constraint_sub[i] != '-':
                     legit = False
-                    tkMessageBox.showinfo("String error!", constraint_sub[i]+" is not a valid entry!")
+                    print "String error!", constraint_sub[i]+" is not a valid entry!"
                     break
             if i == dim-1:
                 break
         if legit:
-            root.destroy()
-
-forward = Button(root, text = '>', command = getColumn1)
-forward.pack(side = RIGHT)
-root.protocol("WM_DELETE_WINDOW", quit)
-dim_box.focus_set()
-root.bind('<Return>',(lambda event: getColumn1()))
-root.mainloop()
+            not_entered = False
 #______________
+            
 root = Tk()
 root.withdraw()
 result = tkMessageBox.askquestion("ABC End View Solver", "Are diagonals required to have all characters?")
@@ -235,7 +161,6 @@ if result == 'yes':
 else:
     diag = False
 #______________
-'''
 
 
 
@@ -679,4 +604,18 @@ def test():
     print "time taken in seconds:", toc-tic
 
 # main()
-test()
+# test()
+
+def test2():
+    board = init_board()
+    board[0][0] = 'A'
+    board[1][0] = 'C'
+    board[2][0] = 'X'
+    board[2][1] = 'X'
+    board[2][2] = 'A'
+    board[4][0] = 'X'
+    board[6][0] = 'E'
+    cancel_all(board)
+    mass_optimize(board)
+    cancel_all(board)
+    printOut(board)
