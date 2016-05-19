@@ -8,9 +8,9 @@ import tkMessageBox
 # params: rows/columns, count, head/tail
 
 # problem 209
-#constraint = [[['A',''],['C','D'],['A',''],['','C'],['E',''],['','E'],['E','']],
+# constraint = [[['A',''],['C','D'],['A',''],['','C'],['E',''],['','E'],['E','']],
 #                [['A',''],['','A'],['B',''],['','B'],['','B'],['C','D'],['B','']]]
-#choices = 'ABCDE'
+# choices = 'ABCDE'
 
 # problem 3
 # constraint = [[['',''],['',''],['A','']],[['','B'],['',''],['','']]]
@@ -18,13 +18,18 @@ import tkMessageBox
 
 # problem 176
 constraint = [[['A',''],['','A'],['D',''],['',''],['','E'],['',''],],
-                [['','E'],['','B'],['E',''],['','D'],['C',''],['','C']]]
+               [['','E'],['','B'],['E',''],['','D'],['C',''],['','C']]]
 choices = 'ABCDE'
 
 # last problem of the month
-#constraint = [[['',''], ['B',''], ['A',''], ['B',''], ['D','B'], ['B','A'], ['',''], ['','']],
+# constraint = [[['',''], ['B',''], ['A',''], ['B',''], ['D','B'], ['B','A'], ['',''], ['','']],
 #              [['D','B'], ['C','D'], ['','B'], ['C','D'], ['',''], ['C','B'], ['',''], ['','D']]]
-#choices = 'ABCD'
+# choices = 'ABCD'
+
+# problem 77
+# constraint = [[['F','C'], ['',''], ['A','C'], ['','D'], ['D','B'], ['D','B'], ['B','F'], ['','']],
+#               [['','A'], ['',''], ['E','F'], ['D',''], ['F','E'], ['D','F'], ['','B'], ['','']]]
+# choices = 'ABCDEF'
 
 dim = len(constraint[0])
 diag = True
@@ -32,7 +37,7 @@ diag = True
 
 
 
-
+'''
 # GUI PART
 not_entered = True
 while not_entered:
@@ -161,14 +166,15 @@ if result == 'yes':
 else:
     diag = False
 #______________
+'''
 
 
 
-
-# start reinitializing
+# start reinitializingpr
 choices += 'X'
 maxX = dim-len(choices)+1
 trials_count = 0
+expansion_count = 0
 solutions_count = 0
 
 def reset_board(board):
@@ -278,6 +284,7 @@ def init_board():
             board[j][i] = board[j][i].replace(constraint[1][i][1],'')
     # check only case
     cancel_all(board)
+    mass_optimize(board)
     return board
 
 def cancel_all(board):
@@ -503,19 +510,66 @@ def optimize(board, coord):
                 for i in range(dim):
                     if i != coord[0]:
                         board[i][dim-1-i] = board[i][dim-1-i].replace(board[coord[0]][coord[1]],'')
+    else: # if an X is filled, recancel constraints.
+        # check row, beginning
+        xcount = 0
+        for i in range(dim-len(choices)+1, dim):
+            if board[coord[0]][i] == 'X':
+                xcount += 1
+        maxConstraint = dim - len(choices) + 1 - xcount
+        for i in range(maxConstraint+1, dim-len(choices)+2):
+            board[coord[0]][i] = board[coord[0]][i].replace(constraint[0][coord[0]][0],'')
+        # check row, end
+        xcount = 0
+        for i in range(0, len(choices)-1):
+            if board[coord[0]][i] == 'X':
+                xcount += 1
+        maxConstraint = dim - len(choices) + 1 - xcount
+        for i in range(len(choices)-2, dim-maxConstraint-1):
+            board[coord[0]][i] = board[coord[0]][i].replace(constraint[0][coord[0]][1],'')
+        # check column, beginning
+        xcount = 0
+        for i in range(dim-len(choices)+1, dim):
+            if board[i][coord[1]] == 'X':
+                xcount += 1
+        maxConstraint = dim - len(choices) + 1 - xcount
+        for i in range(maxConstraint+1, dim-len(choices)+2):
+            board[i][coord[1]] = board[i][coord[1]].replace(constraint[1][coord[1]][0],'')
+        # check column, end
+        xcount = 0
+        for i in range(0, len(choices)-1):
+            if board[i][coord[1]] == 'X':
+                xcount += 1
+        maxConstraint = dim - len(choices) + 1 - xcount
+        for i in range(len(choices)-2, dim-maxConstraint-1):
+            board[i][coord[1]] = board[i][coord[1]].replace(constraint[1][coord[1]][1],'')
 
     # TODO: unoptimized as cancel all board rather than
     # just one character and its corresponding columns and rows
     cancel_all(board)
 
+def printBorder(maxChar):
+    for i in range(dim):
+        print '+',
+        print '-'*maxChar,
+    print '+'
+
 def printOut(board):
+    maxChar = 0
     for i in range(dim):
         for j in range(dim):
+            if maxChar < len(board[i][j]):
+                maxChar = len(board[i][j])
+    for i in range(dim):
+        printBorder(maxChar)
+        for j in range(dim):
+            print '|',
             if board[i][j] == 'X':
-                print '.',
+                print '.'.center(maxChar),
             else:
-                print board[i][j],
-        print
+                print board[i][j].center(maxChar),
+        print '|'
+    printBorder(maxChar)
 
 def mass_optimize(board):
     if not is_legit(board):
@@ -523,7 +577,7 @@ def mass_optimize(board):
         return
     for i in range(dim):
         for j in range(dim):
-            if len(board[i][j]) == 1 and board[i][j] != 'X':
+            if len(board[i][j]) == 1:
                 optimize(board,[i,j])
 
 def if_print(board):
@@ -544,18 +598,19 @@ def solve(shit_to_solve):
     do_print = False
     
     if do_print:
-        print board
+        printOut(board)
     
+    global trials_count
+    trials_count += 1
+
     if is_legit(board):
-        global trials_count
-        trials_count += 1
-        
         if is_deadend(board):
             global solutions_count
             solutions_count += 1
             print "SOLUTION FOUND! --- after",
             print trials_count,
             print "trials"
+            print
             printOut(board)
             print
             
@@ -571,6 +626,9 @@ def solve(shit_to_solve):
                 if do_print:
                     print minc
                     print 'org', board
+
+                global expansion_count
+                expansion_count += 1
 
                 new_board = deepcopy(board)
                 new_board[minc[0]][minc[1]] = new_board[minc[0]][minc[1]][0]
@@ -594,6 +652,7 @@ def main():
         solve(shit_to_solve)
     print "total number of solutions:", solutions_count
     print "total number of trials:", trials_count
+    print "total number of expansions:", expansion_count
 
 def test():
     tic = default_timer()
@@ -603,19 +662,11 @@ def test():
     toc = default_timer()
     print "time taken in seconds:", toc-tic
 
-# main()
-# test()
-
 def test2():
     board = init_board()
-    board[0][0] = 'A'
-    board[1][0] = 'C'
-    board[2][0] = 'X'
-    board[2][1] = 'X'
-    board[2][2] = 'A'
-    board[4][0] = 'X'
-    board[6][0] = 'E'
-    cancel_all(board)
     mass_optimize(board)
     cancel_all(board)
     printOut(board)
+
+# main()
+# test()
