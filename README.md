@@ -15,11 +15,5 @@ The solution of a game I was challenged through bruteforce. Rules are simple: yo
         +---+
 ```
 
-<i>ABCEndView.py</i>    
-The rules of the game can be found here: http://www.janko.at/Raetsel/Abc-End-View/index.htm. Similar to Sudoku solvers, the program removes impossible choices for each square, then bruteforce on the most promising route.
+<i>More to be added.</i>    
 
-To input the problem, change the `constraint` and `choices` variables. For `choices`, it's a string of all the possible characters to fill in. As commented on the code, for `constraint`, it's a 3-dimensional array:
-```
-# params: rows/columns, count, head/tail
-```
-<i>Update:</i> Now allows you to uncomment the GUI part of the code and insert problem with a Tkinter interface.
